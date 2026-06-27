@@ -357,10 +357,25 @@ $encoders = Encoder::getAll();
 
             var getEncoderTimout = [];
 
-            function getEncoder(id, siteURL) {
+            function getEncoder(id, siteURL, user, pass, ownSiteURL) {
                 clearTimeout(getEncoderTimout[id]);
+                var serverStatusUrl = siteURL + 'serverStatus';
+                var postData = {};
+                if (user && user.length > 0) {
+                    postData['user'] = user;
+                }
+                if (pass && pass.length > 0) {
+                    postData['pass'] = pass;
+                }
+                if (ownSiteURL && ownSiteURL.length > 0) {
+                    postData['siteURL'] = ownSiteURL;
+                }
+                
                 $.ajax({
-                    url: siteURL + 'serverStatus',
+                    type: 'POST',
+                    url: serverStatusUrl,
+                    data: postData,
+                    dataType: 'json',
                     timeout: 1000,
                     success: function(response) {
                         if (typeof response == 'object') {
@@ -378,13 +393,13 @@ $encoders = Encoder::getAll();
                             goOffline(id)
                         }
                         getEncoderTimout[id] = setTimeout(function() {
-                            getEncoder(id, siteURL);
+                            getEncoder(id, siteURL, user, pass, ownSiteURL);
                         }, 5000);
                     },
                     error: function() {
                         goOffline(id);
                         getEncoderTimout[id] = setTimeout(function() {
-                            getEncoder(id, siteURL);
+                            getEncoder(id, siteURL, user, pass, ownSiteURL);
                         }, 15000);
                     }
 
@@ -465,7 +480,17 @@ $encoders = Encoder::getAll();
                     });
 
                     pingJS(<?php echo $value['id']; ?>, '<?php echo $value['siteURL']; ?>view/img/favicon.ico');
-                    getEncoder(<?php echo $value['id']; ?>, '<?php echo $value['siteURL']; ?>');
+                    <?php 
+                        $encoder = new Encoder($value['id']);
+                        $streamer = $encoder->getStreamer();
+                        $encoderUser = '';
+                        $encoderPass = '';
+                        if ($streamer) {
+                            $encoderUser = $streamer->getUser();
+                            $encoderPass = $streamer->getPass();
+                        }
+                    ?>
+                    getEncoder(<?php echo $value['id']; ?>, '<?php echo $value['siteURL']; ?>', '<?php echo htmlspecialchars($encoderUser); ?>', '<?php echo htmlspecialchars($encoderPass); ?>', '<?php echo htmlspecialchars($global['webSiteRootURL']); ?>');
 
                 <?php
                 }

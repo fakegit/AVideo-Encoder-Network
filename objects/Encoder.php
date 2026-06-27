@@ -134,4 +134,17 @@ class Encoder extends ObjectYPT
         $this->description = $description;
     }
 
+    /**
+     * Get the Streamer object associated with this encoder
+     * @return Streamer|null
+     */
+    function getStreamer()
+    {
+        if (empty($this->streamers_id)) {
+            return null;
+        }
+        require_once dirname(__FILE__) . '/Streamer.php';
+        return new Streamer($this->streamers_id);
+    }
+
 }

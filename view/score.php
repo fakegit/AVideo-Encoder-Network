@@ -26,7 +26,20 @@ if ($fileAge > $lifetimeSeconds) {
     foreach ($encoders as $value) {
         $site[$value['id']]['ping'] = json_decode(url_get_contents("{$global['webSiteRootURL']}ping/{$value['id']}", $context));
         $site[$value['id']]['siteURL'] = $value['siteURL'];
-        $site[$value['id']]['serverStatus'] = json_decode(url_get_contents("{$value['siteURL']}serverStatus", $context));
+        
+        // Get streamer credentials for cross-domain authentication
+        $encoder = new Encoder($value['id']);
+        $streamer = $encoder->getStreamer();
+        $user = '';
+        $pass = '';
+        if ($streamer) {
+            $user = $streamer->getUser();
+            $pass = $streamer->getPass();
+        }
+        
+        // Build serverStatus URL with authentication parameters
+        $serverStatusUrl = buildServerStatusUrl($value['siteURL'], $user, $pass, $global['webSiteRootURL']);
+        $site[$value['id']]['serverStatus'] = json_decode(url_get_contents($serverStatusUrl, $context));
     }
 
     $content = json_encode($site);

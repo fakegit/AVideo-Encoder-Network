@@ -106,3 +106,44 @@ function url_get_contents($Url, $ctx = "", $timeout = 0) {
     }
     return $content;
 }
+
+/**
+ * Build serverStatus URL with cross-domain authentication parameters
+ * 
+ * @param string $encoderURL The encoder URL (e.g., "https://encoder.example.com/")
+ * @param string $user The authorized encoder user
+ * @param string $pass The user password
+ * @param string $siteURL The requesting AVideo site URL
+ * @return string The complete serverStatus URL with authentication parameters
+ */
+function buildServerStatusUrl($encoderURL, $user = "", $pass = "", $siteURL = "") {
+    global $global;
+    
+    // Ensure encoder URL has trailing slash
+    $encoderURL = addLastSlash($encoderURL);
+    
+    // Use current site URL if not provided
+    if (empty($siteURL)) {
+        $siteURL = $global['webSiteRootURL'];
+    }
+    
+    $url = $encoderURL . 'serverStatus';
+    
+    // Add authentication parameters if provided
+    $params = array();
+    if (!empty($user)) {
+        $params['user'] = urlencode($user);
+    }
+    if (!empty($pass)) {
+        $params['pass'] = urlencode($pass);
+    }
+    if (!empty($siteURL)) {
+        $params['siteURL'] = urlencode($siteURL);
+    }
+    
+    if (!empty($params)) {
+        $url .= '?' . http_build_query($params);
+    }
+    
+    return $url;
+}
