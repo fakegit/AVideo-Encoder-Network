@@ -32,13 +32,15 @@ if ($fileAge > $lifetimeSeconds) {
         $streamer = $encoder->getStreamer();
         $user = '';
         $pass = '';
+        $streamerSiteURL = '';
         if ($streamer) {
             $user = $streamer->getUser();
             $pass = $streamer->getPass();
+            $streamerSiteURL = $streamer->getSiteURL();
         }
         
         // Build serverStatus URL with authentication parameters
-        $serverStatusUrl = buildServerStatusUrl($value['siteURL'], $user, $pass, $global['webSiteRootURL']);
+        $serverStatusUrl = buildServerStatusUrl($value['siteURL'], $user, $pass, $streamerSiteURL);
         $site[$value['id']]['serverStatus'] = json_decode(url_get_contents($serverStatusUrl, $context));
     }
 

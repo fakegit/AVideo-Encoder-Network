@@ -485,12 +485,14 @@ $encoders = Encoder::getAll();
                         $streamer = $encoder->getStreamer();
                         $encoderUser = '';
                         $encoderPass = '';
+                        $streamerSiteURL = '';
                         if ($streamer) {
                             $encoderUser = $streamer->getUser();
                             $encoderPass = $streamer->getPass();
+                            $streamerSiteURL = $streamer->getSiteURL();
                         }
                     ?>
-                    getEncoder(<?php echo $value['id']; ?>, '<?php echo $value['siteURL']; ?>', '<?php echo htmlspecialchars($encoderUser); ?>', '<?php echo htmlspecialchars($encoderPass); ?>', '<?php echo htmlspecialchars($global['webSiteRootURL']); ?>');
+                    getEncoder(<?php echo $value['id']; ?>, '<?php echo $value['siteURL']; ?>', '<?php echo htmlspecialchars($encoderUser); ?>', '<?php echo htmlspecialchars($encoderPass); ?>', '<?php echo htmlspecialchars($streamerSiteURL); ?>');
 
                 <?php
                 }
